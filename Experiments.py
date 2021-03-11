@@ -88,4 +88,31 @@ def display_error_calculation_between_A_and_Q(m,n) :
     plt.plot(error)
     plt.show()
 
-# display_error_calculation_between_A_and_Q(110,100)
+def display_expectation_of_error_calculation_between_A_and_Q(m, n, N, p) :
+    """
+    :param m: An integer, the number of row of the matrix A.
+    :param n: An integer, the number of columns of the matrix A.
+    :param N: An integer, the number of matrix created by value of l.
+    :param p:  oversampling parameter (p ≥ 2)
+    :return: Display a graph of the expectation of error depending on l and a list of valus whis not respect Theorem 1.1.
+    """
+    A = np.random.randn(m, n)
+    svdA = np.linalg.svd(A, full_matrices=True)[1]
+    strange_values = []
+    expectation_of_error = []
+    for k in range(0, min(m, n) - p + 1):
+        l = k + p
+        error = []
+        for i in range(N):
+            error += [error_calculation_between_A_and_Q(A, l)]
+        expectation_of_error += [(1 / N) * sum(error)]
+
+        if expectation_of_error[-1] > (1 + (4 * (l * min(m, n)) ** (1 / 2)) / (p - 1)) * svdA[k + 1]:
+            strange_values += [expectation_of_error[-1], (1 + (4 * (l * min(m, n)) ** (1 / 2)) / (p - 1)) * svdA[k + 1], k, p]
+    plt.plot(expectation_of_error)
+    plt.show()
+
+    return strange_values
+
+#print(display_error_calculation_between_A_and_Q(100, 100))
+#print(display_expectation_of_error_calculation_between_A_and_Q(100, 100, 20, 2))
